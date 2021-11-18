@@ -2,40 +2,35 @@ import throttle from 'lodash.throttle';
 
 const form = document.querySelector('.feedback-form');
 const textarea = document.querySelector('.feedback-form textarea');
-const STORAGE_KEY = 'feedback-message';
+const input = document.querySelector('input');
+const STORAGE_KEY = 'feedback-form-state';
 const formData = {};
 
 form.addEventListener('submit', onBtnSubmit);
-form.addEventListener('input', evt => {
-  formData[evt.target.name] = evt.target.value;
-
-  const inputtedFormData = JSON.stringify(formData);
-  localStorage.setItem('message-fbck', inputtedFormData);
-});
-textarea.addEventListener('input', throttle(onTextAreaInput, 500));
+form.addEventListener('input', throttle(onTextAreaInput, 500));
 
 populateTextArea();
 
 function onTextAreaInput(evt) {
-  const message = evt.target.value;
-  localStorage.setItem(STORAGE_KEY, message);
+  formData[evt.target.name] = evt.target.value;
+
+  const inputtedFormData = JSON.stringify(formData);
+  localStorage.setItem(STORAGE_KEY, inputtedFormData);
 }
 
 function onBtnSubmit(evt) {
   evt.preventDefault();
 
+  console.log(JSON.parse(localStorage.getItem(STORAGE_KEY)));
   evt.target.reset();
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// console.log(formData);
-
 function populateTextArea() {
-  const savedMessage = localStorage.getItem(STORAGE_KEY);
+  const parsedDateFromStorage = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
-  if (savedMessage) {
-    textarea.value = savedMessage;
+  if (parsedDateFromStorage) {
+    input.value = parsedDateFromStorage.email;
+    textarea.value = parsedDateFromStorage.message;
   }
 }
-
-console.log(formData);
